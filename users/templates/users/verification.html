@@ -1,0 +1,9 @@
+{% autoescape off %}
+
+<div>
+    <a href="http://{{ domain }}{% url 'users:activate' uidb64=uid token=token %}">
+        Follow the link to activate your account
+    </a>
+</div>
+
+{% endautoescape %}
