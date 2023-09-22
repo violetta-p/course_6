@@ -1,0 +1,41 @@
+{% extends 'mailing/base.html' %}
+{%block page_content%}
+
+<div class="col-12 mb-5">
+    <a class="btn btn-outline-primary" href="{% url 'mailing:client_create' %}">Add client</a>
+</div>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+        <th scope="col"></th>
+        <th scope="col">First name</th>
+        <th scope="col">Last name</th>
+        <th scope="col">Email</th>
+        <th scope="col">Comment</th>
+        <th scope="col">Is active</th>
+        <th scope="col"></th>
+    </tr>
+  </thead>
+    <tbody>
+    {% for object in object_list %}
+    <tr>
+        <th scope="row">{{ object.pk }}</th>
+        <td>{{ object.first_name }}</td>
+        <td>{{ object.last_name }}</td>
+        <td>{{ object.email }}</td>
+        <td>{{ object.comment }}</td>
+        <td>{{ object.is_active }}</td>
+        <td><div class="btn-group">
+            <a href="{% url 'mailing:client_view' object.pk %}"
+               class="btn btn-sm btn-outline-secondary">View</a>
+            <a href="{% url 'mailing:client_edit' object.pk %}"
+               class="btn btn-sm btn-outline-secondary">Edit</a>
+            <a href="{% url 'mailing:client_delete' object.pk %}"
+               class="btn btn-sm btn-outline-secondary">Delete</a>
+        </div></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

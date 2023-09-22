@@ -1,0 +1,27 @@
+{% extends 'mailing/base.html' %}
+
+{% block page_content %}
+<div class="col-6">
+    <div class="card mb-4 box-shadow">
+        <div class="card-body">
+            <h5 class="card-title">Topic: {{object.topic}}</h5>
+            <p class="card-text">Message: {{object.message }}</p>
+            <p class="card-text">Category: {{object.category }}</p>
+            <p class="card-text text-muted">Created by: {{object.creator}}</p>
+
+            <div class="btn-group">
+                <a class="btn btn-sm btn-primary"
+               href="{% url 'mailing:message_list'%}" role="button">Back</a>
+                {% if object.creator == user %}
+                <a class="btn btn-sm btn-primary"
+               href="{% url 'mailing:message_edit' object.pk %}" role="button">Edit</a>
+                <a class="btn btn-sm btn-danger"
+               href="{% url 'mailing:message_delete' object.pk %}" role="button">Delete</a>
+                <a class="btn btn-sm btn-outline-secondary"
+                   href="{% url 'mailing:mailing_create'%}" role="button">Mailing settings</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

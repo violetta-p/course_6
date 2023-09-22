@@ -1,0 +1,42 @@
+{% extends 'mailing/base.html' %}
+{%block page_content%}
+
+<div class="container">
+    <h1 class="jumbotron-heading text-center">All categories</h1>
+    <p class="lead text-muted"></p>
+</div>
+
+<div class="col-12 mb-5">
+    <a class="btn btn-outline-primary" href="{% url 'mailing:message_list' %}">Show all items</a>
+</div>
+
+{% for category in category_list%}
+<div class="col-md-4">
+    <div class="card mb-4 box-shadow" style="height: 10rem;">
+        <div class="card-body">
+            <ul class="list-unstyled mt-3 mb-4">
+                <li>{{category.name}}</li>
+                <li class="text-muted">Description: {{category.description | slice:28}}</li>
+            </ul>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a class="btn btn-primary"
+                       href="{% url 'mailing:filtered_messages' category.pk %}" role="button">View</a>
+                </div>
+
+        </div>
+    </div>
+</div>
+
+{% endfor %}
+</div>
+    <div id="pages" align="center">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page.obj.previous_page_number }}"><- Previous </a>
+        {% endif %}
+            <span class="current">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">Next -> </a>
+        {% endif %}
+    </div>
+{% endblock %}

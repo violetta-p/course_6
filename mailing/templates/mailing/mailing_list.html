@@ -1,0 +1,56 @@
+{% extends 'mailing/base.html' %}
+{%block page_content%}
+
+<div class="col-12 mb-5">
+    <a class="btn btn-outline-primary" href="{% url 'mailing:mailing_create' %}">Add new mail</a>
+</div>
+<table class="table table-striped">
+  <thead>
+    <tr>
+        <th scope="col"></th>
+        <th scope="col">Created on</th>
+        <th scope="col">Created at</th>
+        <th scope="col">Frequency</th>
+        <th scope="col">Status</th>
+        <th scope="col">Message</th>
+        <th scope="col">Finish date</th>
+        <th scope="col">Finish time</th>
+        <th scope="col"></th>
+    </tr>
+  </thead>
+    <tbody>
+    {% for object in object_list %}
+    <tr>
+        <th scope="row">{{ object.pk }}</th>
+        <td>{{ object.create_date }}</td>
+        <td>{{ object.sending_time }}</td>
+        <td>{{ object.frequency }}</td>
+        <td>{{ object.status }}</td>
+        <td>{{ object.message }}</td>
+        <td>{{ object.finish_date }}</td>
+        <td>{{ object.finish_time }}</td>
+        <td><div class="btn-group">
+            <a href="{% url 'mailing:mailing_view' object.pk %}"
+               class="btn btn-sm btn-outline-secondary">View</a>
+            <a href="{% url 'mailing:mailing_edit' object.pk %}"
+               class="btn btn-sm btn-outline-secondary">Edit</a>
+            <a href="{% url 'mailing:mailing_delete' object.pk %}"
+               class="btn btn-sm btn-outline-secondary">Delete</a>
+        </div></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+
+</div>
+    <div id="pages" align="center">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page.obj.previous_page_number }}"><- Previous </a>
+        {% endif %}
+            <span class="current">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">Next -> </a>
+        {% endif %}
+    </div>
+{% endblock %}

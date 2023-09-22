@@ -1,0 +1,44 @@
+{% extends 'mailing/base.html' %}
+
+{%block page_content%}
+
+<div class="col-12 mb-5">
+    <a class="btn btn-outline-primary" href="{% url 'mailing:message_create' %}">Create new message</a>
+</div>
+
+
+{% for object in object_list%}
+<div class="col-md-4">
+    <div class="card mb-4 box-shadow">
+        <div class="card-body">
+            <ul class="list-unstyled mt-3 mb-4">
+                <li>{{object.topic}}</li>
+                <li class="text-muted">{{object.message | slice:100 }}</li>
+                <li class="text-muted">Created by: {{object.creator|default:"No info" }}</li>
+            </ul>
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                    <a class="btn btn-sm btn-outline-success"
+                       href="{% url 'mailing:message_detail' object.pk %}" role="button">View</a>
+                    {% if object.creator == user %}
+                    <a class="btn btn-sm btn-outline-danger"
+                       href="{% url 'mailing:message_delete' object.pk %}" role="button">Delete</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endfor %}
+</div>
+    <div id="pages" align="center">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page.obj.previous_page_number }}"><- Previous </a>
+        {% endif %}
+            <span class="current">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">Next -> </a>
+        {% endif %}
+    </div>
+{% endblock %}

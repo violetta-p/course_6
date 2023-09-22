@@ -1,0 +1,35 @@
+{% extends 'mailing/base.html' %}
+{% block page_content %}
+
+<div class="container">
+    <div class="col-12">
+    <div class="row text-start">
+        <div class="col-6">
+            <div class="card mb-4 box-shadow">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        {{ object.first_name }} {{ object.last_name }}
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Email: {{ object.email }}</p>
+                    <p class="card-text">Comment: {{ object.comment }}</p>
+                </div>
+                <div class="card-footer">
+                    Active: {{object.is_active}}
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="btn-group">
+                        <a href="{% url 'mailing:client_edit' object.pk %}"
+                           class="btn btn-sm btn-outline-secondary">Update</a>
+                        <a href="{% url 'mailing:client_delete' object.pk %}"
+                           class="btn btn-sm btn-outline-secondary">Delete</a>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+{% endblock %}

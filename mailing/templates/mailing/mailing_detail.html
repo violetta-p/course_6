@@ -1,0 +1,34 @@
+{% extends 'mailing/base.html' %}
+{% load my_tags %}
+{% block page_content %}
+<div class="col-6">
+    <div class="card mb-4 box-shadow">
+        <div class="card-body">
+            <h5 class="card-title">Created: {{object.create_date}}</h5>
+            <p class="card-text">Sending time: {{object.sending_time}} rub</p>
+            <p class="card-text">Frequency: {{object.frequency }}</p>
+            <p class="card-text">Status: {{object.status}}</p>
+            <p class="card-text">Message: {{object.message}}</p>
+            <p class="card-text">Finish date: {{object.finish_date }}</p>
+            <p class="card-text">Finish time: {{object.finish_time }}</p>
+
+            <div class="btn-group">
+                <a class="btn btn-sm btn-primary"
+               href="{% url 'mailing:mailing_list'%}" role="button">Back</a>
+
+                <a class="btn btn-sm btn-primary"
+               href="{% url 'mailing:mailing_edit' object.pk %}" role="button">Edit</a>
+                <a class="btn btn-sm btn-danger"
+               href="{% url 'mailing:mailing_delete' object.pk %}" role="button">Delete</a>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-6">
+    <img src="{% mediapath object.preview_pic %}" class="card-img-top">
+</div>
+
+
+
+{% endblock %}
