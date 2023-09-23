@@ -1,5 +1,7 @@
 from datetime import datetime
-
+from mailing.models import Category
+from django.conf import settings
+from django.core.cache import cache
 from config import settings
 from mailing.models import MailingLogs, Mailing
 
@@ -39,3 +41,15 @@ def send_mails():
                 send_mail(ms, mc)
 
 
+def get_categories_cache():
+
+    if settings.CACHE_ENABLED:
+        key = 'categories'
+        category_list = cache.get(key)
+        if category_list is None:
+            category_list = Category.objects.all()
+            cache.set(key, category_list)
+    else:
+        category_list = Category.objects.all()
+
+    return category_list
