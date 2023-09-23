@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, DetailView, ListView, UpdateView, DeleteView
 
@@ -54,3 +55,10 @@ class BlogDetailView(DetailView):
 class BlogDeleteView(LoginRequiredMixin, DeleteView):
     model = Blog
     success_url = reverse_lazy('blog:list')
+
+
+def manager_blog_list(request):
+    content = {
+        'blog_list': Blog.objects.all(),
+    }
+    return render(request, 'blog/manager_blog_list.html', content)

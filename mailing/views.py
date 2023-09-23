@@ -1,6 +1,12 @@
+import random
+
+
 from django.urls import reverse_lazy, reverse
+from django.views.decorators.cache import cache_page
 
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView, TemplateView
+
+from blog.models import Blog
 from mailing.models import Mailing, Client, MailingLogs, Message, Category, MessageVersion
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import inlineformset_factory
@@ -9,6 +15,8 @@ from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, DetailView, ListView, UpdateView, DeleteView
 from mailing.forms import MailingCreateForm, MessageForm, VersionForm, ClientForm
+from mailing.services import get_categories_cache
+
 
 # from mailing.services import toggle_status
 
@@ -43,7 +51,7 @@ class ClientCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('mailing:client_list')
 
     def form_valid(self, form):
-        client = form.save(commit=False)
+        client = form.save()
         client.user = self.request.user
         client.save()
         return super(ClientCreateView, self).form_valid(form)
@@ -88,9 +96,6 @@ class MailingLogListView(ListView):
         return context
 
 
-
-
-
 class MailingListView(ListView):
     model = Mailing
     extra_context = {'title': 'Рассылки'}
@@ -110,15 +115,12 @@ class MailingCreateView(LoginRequiredMixin, CreateView):
     form_class = MailingCreateForm
     success_url = reverse_lazy('mailing:mailing_list')
 
-
-
     def form_valid(self, form):
         self.object = form.save()
         self.object.status = 'CREATE'
         self.object.save()
 
-        # message_service = MessageService(mailing)
-        #
+        # 
         # message_service.create_task()
         # mailing.status = 'START'
         # mailing.save()
@@ -139,7 +141,6 @@ class MailingUpdateView(LoginRequiredMixin, UpdateView):
         else:
             raise Http404
 
-
     def form_valid(self, form):
         self.object = form.save()
         return super().form_valid(form)
@@ -159,7 +160,7 @@ class MailingDeleteView(LoginRequiredMixin, DeleteView):
 
 def categories(request):
     content = {
-        'category_list': Category.objects.all(),
+        'category_list': get_categories_cache(),
     }
     return render(request, 'mailing/categories.html', content)
 
@@ -198,10 +199,8 @@ class MessageUpdateView(LoginRequiredMixin, UpdateView):
         else:
             raise Http404
 
-
     def get_success_url(self):
         return reverse('mailing:message_edit', args=[self.kwargs.get('pk')])
-
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
@@ -250,16 +249,41 @@ class MessageListView(ListView):
 
 
 def get_current_user(request):
-    current_user = request.user.get_username()
-    return render(request, 'message_list.html', {'user':current_user})
+    content = {
+        'user': request.user.get_username(),
+        'is_super': bool(request.user.is_superuser),
+        'is_staff': bool(request.user.is_staff)
+    }
+    # current_user = request.user.get_username()
+
+    return render(request, 'message_list.html', content)
 
 
 class MessageDetailView(DetailView):
     model = Message
 
 
-class HomePageView(TemplateView):
-    template_name = 'home_page.html'
+@cache_page(60)
+def home_page(request):
 
+    blog_count = int(Blog.objects.count())
 
+    if blog_count <= 3:
+        random_arts = list(Blog.objects.all())
+    else:
+        articles = list(Blog.objects.all())
+        random_arts = random.sample(articles, 3)
 
+    content = {
+        'active_count': Mailing.objects.filter(status='START').count(),
+        'total_count': Message.objects.count(),
+        'unique_users': Message.objects.values('creator').distinct().count(),
+        'random_articles': random_arts,
+    }
+    return render(request, 'mailing/home_page.html', content)
+
+def manager_mail_list(request):
+    content = {
+        'mail_list': Mailing.objects.all(),
+    }
+    return render(request, 'mailing/manager_mail_list.html', content)

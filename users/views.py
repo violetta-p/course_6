@@ -121,3 +121,9 @@ class FailedVerifView(TemplateView):
 class SignUpMessageView(TemplateView):
     template_name = 'users/sign_up_message.html'
 
+
+def manager_user_list(request):
+    content = {
+        'user_list': User.objects.all(),
+    }
+    return render(request, 'users/manager_user_list.html', content)
