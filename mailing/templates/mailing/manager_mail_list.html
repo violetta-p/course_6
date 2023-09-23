@@ -1,0 +1,48 @@
+{% extends 'mailing/base.html' %}
+{% load my_tags %}
+{%block page_content%}
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+        <th scope="col"></th>
+        <th scope="col">Created on</th>
+        <th scope="col">Created at</th>
+        <th scope="col">Frequency</th>
+        <th scope="col">Status</th>
+        <th scope="col">Message</th>
+        <th scope="col">Finish date</th>
+        <th scope="col">Finish time</th>
+        <th scope="col">Activity</th>
+        <th scope="col"></th>
+    </tr>
+  </thead>
+    <tbody>
+    {% for object in mail_list %}
+    <tr>
+        <th scope="row">{{ object.pk }}</th>
+        <td>{{ object.create_date }}</td>
+        <td>{{ object.sending_time }}</td>
+        <td>{{ object.frequency }}</td>
+        <td>{{ object.status }}</td>
+        <td>{{ object.message }}</td>
+        <td>{{ object.finish_date }}</td>
+        <td>{{ object.finish_time }}</td>
+        <td>{{ object.is_active }}</td>
+        <td><div class="btn">
+            {% csrf_token %}
+            {% if not object.is_superuser and not object.is_staff %}
+                <button onclick="{% activation object %}" type="submit" class="btn btn-primary">
+                    {% if object.is_active %}
+                        Disable
+                    { % else %}
+                        Activate
+                    {% endif %}
+                    </button>
+            {% endif %}
+        </div></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

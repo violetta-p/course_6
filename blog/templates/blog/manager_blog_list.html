@@ -1,0 +1,41 @@
+{% extends 'mailing/base.html' %}
+{% load my_tags %}
+{%block page_content%}
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+        <th scope="col"></th>
+        <th scope="col">Title</th>
+        <th scope="col">Body</th>
+        <th scope="col">Picture</th>
+        <th scope="col">Creation date</th>
+        <th scope="col">Is published</th>
+        <th scope="col">Views count</th>
+        <th scope="col">Creator</th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+    </tr>
+  </thead>
+    <tbody>
+    {% for object in blog_list %}
+    <tr>
+        <th scope="row">{{ object.pk }}</th>
+        <td>{{ object.title }}</td>
+        <td>{{ object.body | slice:20 }}</td>
+        <td>{{ object.preview_pic }}</td>
+        <td>{{ object.creation_date }}</td>
+        <td>{{ object.is_published }}</td>
+        <td>{{ object.views_count }}</td>
+        <td>{{ object.creator }}</td>
+        <td><div class="btn-group">
+            <a href="{% url 'blog:edit' object.pk %}"
+               class="btn btn-sm btn-outline-secondary">Edit</a>
+            <a href="{% url 'blog:delete' object.pk %}"
+               class="btn btn-sm btn-outline-secondary">Delete</a>
+        </div></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
