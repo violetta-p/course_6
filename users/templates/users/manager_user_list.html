@@ -1,0 +1,42 @@
+{% extends 'mailing/base.html' %}
+{% load my_tags %}
+{%block page_content%}
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+        <th scope="col"></th>
+        <th scope="col">Email</th>
+        <th scope="col">Phone</th>
+        <th scope="col">Country</th>
+        <th scope="col">Avatar</th>
+        <th scope="col">Is active</th>
+        <th scope="col"></th>
+    </tr>
+  </thead>
+    <tbody>
+    {% for object in user_list %}
+    <tr>
+        <th scope="row">{{ object.pk }}</th>
+        <td>{{ object.email }}</td>
+        <td>{{ object.phone }}</td>
+        <td>{{ object.country }}</td>
+        <td>{{ object.avatar }}</td>
+        <td>{{ object.is_active }}</td>
+        <td><div class="btn">
+            {% csrf_token %}
+            {% if not object.is_superuser and not object.is_staff %}
+                <button onclick="{% activation object %}" type="submit" class="btn btn-primary">
+                    {% if object.is_active %}
+                        Disable
+                    { % else %}
+                        Activate
+                    {% endif %}
+                    </button>
+            {% endif %}
+        </div></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

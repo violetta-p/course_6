@@ -11,7 +11,7 @@ class MailingCreateForm(forms.ModelForm):
 
     class Meta:
         model = Mailing
-        fields = ('frequency', 'status', 'client', 'message', 'finish_date', 'finish_time')
+        fields = ('sending_time', 'frequency', 'status', 'client', 'message', 'finish_date', 'finish_time')
 
     def clean_name(self):
         forbidden_items = ['казино', 'криптовалюта', 'крипта', 'биржа', 'дешево',

@@ -9,13 +9,21 @@
             <div class="col-sm-4 offset-md-1 py-4">
                 <h4 class="text-white">Site navigation</h4>
                 <ul class="list-unstyled">
-                    <li><a href="{% url 'mailing:categories' %}" class="text-white">Catalog</a></li>
-                    <li><a href="{% url 'blog:list' %}" class="text-white">Blog</a></li>
-                    {% if user.is_authenticated %}
+                    {% if user.is_authenticated and user.is_staff %}
+                        <li><a href="{% url 'users:manager_user_list' %}" class="text-white">Users</a></li>
+                        <li><a href="{% url 'mailing:manager_mail_list' %}" class="text-white">Mailings</a></li>
+                        <li><a href="{% url 'blog:manager_blog_list' %}" class="text-white">Blog</a></li>
+                        <li><a href="{% url 'users:profile' %}" class="text-white">Profile</a></li>
+                        <li><a href="{% url 'users:logout' %}" class="text-white">Exit</a></li>
+                    {% elif user.is_authenticated %}
+                        <li><a href="{% url 'blog:list' %}" class="text-white">Blog</a></li>
+                        <li><a href="{% url 'mailing:categories' %}" class="text-white">Categories</a></li>
                         <li><a href="{% url 'mailing:client_list' %}" class="text-white">My clients</a></li>
                         <li><a href="{% url 'users:profile' %}" class="text-white">Profile</a></li>
                         <li><a href="{% url 'users:logout' %}" class="text-white">Exit</a></li>
                     {% else %}
+                        <li><a href="{% url 'blog:list' %}" class="text-white">Blog</a></li>
+                        <li><a href="{% url 'mailing:categories' %}" class="text-white">Categories</a></li>
                         <li><a href="{% url 'users:login' %}" class="text-white">Log in</a></li>
                         <li><a href="{% url 'users:register' %}" class="text-white">Sign up</a></li>
                     {% endif %}

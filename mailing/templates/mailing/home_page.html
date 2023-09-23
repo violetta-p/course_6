@@ -1,6 +1,5 @@
 {% load static %}
 
-<!doctype html>
 <html lang="ru">
   <head>
     <meta charset="utf-8">
@@ -23,12 +22,54 @@
 
   {% include 'mailing/includes/inc_base_menu.html' %}
 
-    <main role="main">
-      <div class="album py-5 bg-light">
+  <main role="main">
+     <div class="album py-5 bg-light">
         <div class="container">
+          <div class="container text-center">
+            <h1 class="jumbotron-heading">Welcome to our website!</h1>
+          </div>
           <div class="row">
-            {% block page_content %}
-            {% endblock %}
+            <div class="col-6">
+              <div class="card mb-4 box-shadow">
+                <div class="card-body text-center">
+                    <h5 class="card-title">We have {{total_count}} mailings</h5>
+                    <p class="card-text">And {{active_count}} are active right now!</p>
+
+                  <div class="footer">
+                      <a href="{% url 'users:login'%}">Create your first mailing -></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="card mb-4 box-shadow">
+                <div class="card-body text-center">
+                    <h5 class="card-title">{{unique_users}} people have already joined us!</h5>
+                    <p class="card-text">Try our service!</p>
+
+                  <div class="footer">
+                      <a href="{% url 'users:register'%}">Join us -></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="container text-center">
+            <h1 class="jumbotron-heading">Read our blog</h1>
+          </div>
+          <div class="row">
+            {% for object in random_articles%}
+              <div class="col-md-4">
+                <div class="card mb-4 box-shadow">
+                  <div class="card-body text-center">
+                    <h5 class="card-title">{{object.title}}</h5>
+                    <p class="card-text">{{object.body}}</p>
+                  </div>
+                </div>
+              </div>
+          </div>
+        </div>
+          {% endfor %}
           </div>
         </div>
       </div>

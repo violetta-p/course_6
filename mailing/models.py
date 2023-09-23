@@ -70,13 +70,16 @@ class Mailing(models.Model):
               ('START', 'Запущена'))
 
     create_date = models.DateField(auto_now_add=True, verbose_name='дата создания')
-    sending_time = models.TimeField(auto_now_add=True, verbose_name='время отправки рассылок')
+    sending_time = models.TimeField(default='00:00', verbose_name='время отправки рассылок')
     frequency = models.CharField(max_length=50, choices=FREQUENCY, verbose_name='частота отправки', default='daily')
     status = models.CharField(max_length=50, choices=STATUS, verbose_name='статус', default=CREATE)
     client = models.ManyToManyField('Client', verbose_name='клиент', blank=True)
     message = models.ForeignKey('Message', on_delete=models.CASCADE, verbose_name='сообщение', **NULLABLE)
     finish_date = models.DateField(verbose_name='дата прекращения рассылки', default='2025-01-01')
     finish_time = models.TimeField(verbose_name='время прекращения рассылки', default='00:00')
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE, verbose_name='Author')
+    is_active = models.BooleanField(default=True, verbose_name='Activity') # поле для блокировки рассылки менеждером.
+    # пользователь не может самостоятельно включить рассылку, заблокированную менеджером
 
     def __str__(self):
         return self.pk
