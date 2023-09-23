@@ -1,7 +1,7 @@
 from django.urls import path
 from users.apps import UsersConfig
 from users.views import LoginView, LogoutView, RegisterView, ProfileView, generate_new_password, EmailActivateView, \
-    SuccessVerifView, FailedVerifView, SignUpMessageView
+    SuccessVerifView, FailedVerifView, SignUpMessageView, manager_user_list
 
 app_name = UsersConfig.name
 
@@ -14,5 +14,6 @@ urlpatterns = [
     path('activate/<uidb64>/<token>', EmailActivateView.as_view(), name='activate'),
     path('activate/success/', SuccessVerifView.as_view(), name='success_verification'),
     path('activate/failure/', FailedVerifView.as_view(), name='failed_verification'),
-    path('activate/message/', SignUpMessageView.as_view(), name='sign_up_message')
+    path('activate/message/', SignUpMessageView.as_view(), name='sign_up_message'),
+    path('manager/users/', manager_user_list, name='manager_user_list'),
 ]
