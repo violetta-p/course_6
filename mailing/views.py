@@ -51,10 +51,11 @@ class ClientCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('mailing:client_list')
 
     def form_valid(self, form):
-        client = form.save()
-        client.user = self.request.user
-        client.save()
-        return super(ClientCreateView, self).form_valid(form)
+        self.object = form.save()
+        self.object.creator = self.request.user
+        self.object.save()
+        return super().form_valid(form)
+        #return super(ClientCreateView, self).form_valid(form)
 
 
 class ClientUpdateView(LoginRequiredMixin, UpdateView):
@@ -263,7 +264,7 @@ class MessageDetailView(DetailView):
     model = Message
 
 
-@cache_page(60)
+
 def home_page(request):
 
     blog_count = int(Blog.objects.count())

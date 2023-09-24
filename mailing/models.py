@@ -1,4 +1,6 @@
 from django.db import models
+
+import users
 from config import settings
 
 NULLABLE = {'blank': True, 'null': True}
@@ -16,17 +18,13 @@ class Category(models.Model):
         verbose_name_plural = 'Categories'
 
 
-
 class Client(models.Model):
-
     first_name = models.CharField(max_length=100, verbose_name='Name', **NULLABLE)
     last_name = models.CharField(max_length=100, verbose_name='Last name', **NULLABLE)
     email = models.EmailField(unique=True, verbose_name='Email address')
     comment = models.TextField(verbose_name='Comment', **NULLABLE)
     is_active = models.BooleanField(default=True, verbose_name='Activity')
-    creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE, verbose_name='Author')
-
-
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, **NULLABLE, verbose_name='Author')
 
     def __str__(self):
         return f"{self.first_name}, {self.last_name}: {self.email}"
@@ -37,10 +35,9 @@ class Client(models.Model):
 
 
 class Message(models.Model):
-
     topic = models.CharField(max_length=200, verbose_name='Topic')
     message = models.TextField(verbose_name='Message body')
-    creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE, verbose_name='Author')
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, **NULLABLE, verbose_name='Author')
     category = models.ForeignKey('Category', on_delete=models.CASCADE)
 
     def __str__(self):
@@ -53,9 +50,9 @@ class Message(models.Model):
 
 class Mailing(models.Model):
 
-    FREQUENCY = (('DAILY', 'Ежедневно'),
-                 ('WEEKLY', 'Раз в неделю'),
-                 ('MONTHLY', 'Раз в месяц'))
+    FREQUENCY = (('DAILY', 'Every day'),
+                 ('WEEKLY', 'Once a week'),
+                 ('MONTHLY', 'Once a month'))
 
     DAILY = 'daily'
     WEEKLY = 'weekly'
@@ -65,18 +62,18 @@ class Mailing(models.Model):
     START = 'started'
     FINISH = 'done'
 
-    STATUS = (('FINISH', 'Завершена'),
-              ('CREATE', 'Создана'),
-              ('START', 'Запущена'))
+    STATUS = (('FINISH', 'Finished'),
+              ('CREATE', 'Created'),
+              ('START', 'Started'))
 
-    create_date = models.DateField(auto_now_add=True, verbose_name='дата создания')
-    sending_time = models.TimeField(default='00:00', verbose_name='время отправки рассылок')
-    frequency = models.CharField(max_length=50, choices=FREQUENCY, verbose_name='частота отправки', default='daily')
-    status = models.CharField(max_length=50, choices=STATUS, verbose_name='статус', default=CREATE)
-    client = models.ManyToManyField('Client', verbose_name='клиент', blank=True)
-    message = models.ForeignKey('Message', on_delete=models.CASCADE, verbose_name='сообщение', **NULLABLE)
-    finish_date = models.DateField(verbose_name='дата прекращения рассылки', default='2025-01-01')
-    finish_time = models.TimeField(verbose_name='время прекращения рассылки', default='00:00')
+    create_date = models.DateField(auto_now_add=True, verbose_name='Created')
+    sending_time = models.TimeField(default='00:00', verbose_name='Time of sending mailings')
+    frequency = models.CharField(max_length=50, choices=FREQUENCY, verbose_name='Interval', default='daily')
+    status = models.CharField(max_length=50, choices=STATUS, verbose_name='Status', default=CREATE)
+    client = models.ManyToManyField('Client', verbose_name='Client', blank=True)
+    message = models.ForeignKey('Message', on_delete=models.CASCADE, verbose_name='Message', **NULLABLE)
+    finish_date = models.DateField(verbose_name='Termination date', default='2025-01-01')
+    finish_time = models.TimeField(verbose_name='Termination time', default='00:00')
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE, verbose_name='Author')
     is_active = models.BooleanField(default=True, verbose_name='Activity') # поле для блокировки рассылки менеждером.
     # пользователь не может самостоятельно включить рассылку, заблокированную менеджером
@@ -89,8 +86,8 @@ class Mailing(models.Model):
         self.save()
 
     class Meta:
-        verbose_name = 'рассылка'
-        verbose_name_plural = 'рассылки'
+        verbose_name = 'Mailing'
+        verbose_name_plural = 'Mailings'
         ordering = ('sending_time',)
 
 
@@ -99,27 +96,27 @@ class MailingLogs(models.Model):
     STATUS_OK = 'ok'
     STATUS_FAILED = 'failed'
 
-    STATUS = ((STATUS_OK, 'Успешно'),
-              (STATUS_FAILED, 'Ошибка'))
+    STATUS = ((STATUS_OK, 'Success'),
+              (STATUS_FAILED, 'Failure'))
 
-    last_try = models.DateTimeField(auto_now_add=True, verbose_name='Время последней отправки')
-    status = models.CharField(default=STATUS_OK, choices=STATUS, verbose_name='Статус')
-    mail_settings = models.ForeignKey('Mailing', on_delete=models.CASCADE, verbose_name='Рассылка')
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name='Рассылка')
+    last_try = models.DateTimeField(auto_now_add=True, verbose_name='The last attempt')
+    status = models.CharField(default=STATUS_OK, choices=STATUS, verbose_name='Status')
+    mail_settings = models.ForeignKey('Mailing', on_delete=models.CASCADE, verbose_name='Mailing')
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name='Client')
 
     def __str__(self):
         return self.pk
 
     class Meta:
-        verbose_name = 'Лог отправки'
-        verbose_name_plural = 'Логи отправок'
+        verbose_name = 'Mailing log'
+        verbose_name_plural = 'Mailing logs'
 
 
 class MessageVersion(models.Model):
-    product = models.ForeignKey('Message', on_delete=models.CASCADE, verbose_name='message')
-    version_number = models.PositiveSmallIntegerField(verbose_name='version number')
-    version_name = models.CharField(max_length=100, verbose_name='version name')
-    is_active = models.BooleanField(verbose_name='flag of the current version')
+    product = models.ForeignKey('Message', on_delete=models.CASCADE, verbose_name='Message')
+    version_number = models.PositiveSmallIntegerField(verbose_name='Version number')
+    version_name = models.CharField(max_length=100, verbose_name='Version name')
+    is_active = models.BooleanField(verbose_name='Flag of the current version')
 
     def __str__(self):
         return f'{self.version_number}: {self.version_name}'
