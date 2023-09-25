@@ -3,7 +3,7 @@ from mailing.apps import MailingConfig
 from mailing.views import ClientListView, ClientDetailView, ClientCreateView, ClientUpdateView, ClientDeleteView, \
     MailingListView, MailingDetailView, MailingUpdateView, MailingDeleteView, categories, filtered_items, \
     MailingCreateView, MessageCreateView, MessageListView, MessageDetailView, MessageUpdateView, MessageDeleteView, \
-    home_page, manager_mail_list
+    home_page, manager_mail_list, ManagerMailingUpdateView
 
 app_name = MailingConfig.name
 
@@ -28,5 +28,6 @@ urlpatterns = [
     path('<int:pk>/items/', filtered_items, name="filtered_messages"),
     path('', home_page, name="home_page"),
     path('manager/mails/', manager_mail_list, name='manager_mail_list'),
+    path('manager/mail_activate/<int:pk>/', ManagerMailingUpdateView.as_view(), name='make_active'),
 
 ]
