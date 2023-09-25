@@ -70,7 +70,7 @@ class Mailing(models.Model):
     sending_time = models.TimeField(default='00:00', verbose_name='Time of sending mailings')
     frequency = models.CharField(max_length=50, choices=FREQUENCY, verbose_name='Interval', default='daily')
     status = models.CharField(max_length=50, choices=STATUS, verbose_name='Status', default=CREATE)
-    client = models.ManyToManyField('Client', verbose_name='Client', blank=True)
+    client = models.ManyToManyField(Client, verbose_name='Client')
     message = models.ForeignKey('Message', on_delete=models.CASCADE, verbose_name='Message', **NULLABLE)
     finish_date = models.DateField(verbose_name='Termination date', default='2025-01-01')
     finish_time = models.TimeField(verbose_name='Termination time', default='00:00')
@@ -88,7 +88,7 @@ class Mailing(models.Model):
     class Meta:
         verbose_name = 'Mailing'
         verbose_name_plural = 'Mailings'
-        ordering = ('sending_time',)
+        ordering = ('id',)
 
 
 class MailingLogs(models.Model):
@@ -100,7 +100,7 @@ class MailingLogs(models.Model):
               (STATUS_FAILED, 'Failure'))
 
     last_try = models.DateTimeField(auto_now_add=True, verbose_name='The last attempt')
-    status = models.CharField(default=STATUS_OK, choices=STATUS, verbose_name='Status')
+    status = models.CharField(max_length=30, default=STATUS_OK, choices=STATUS, verbose_name='Status')
     mail_settings = models.ForeignKey('Mailing', on_delete=models.CASCADE, verbose_name='Mailing')
     client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name='Client')
 

@@ -12,12 +12,13 @@ class ClientAdmin(admin.ModelAdmin):
 class MessageAdmin(admin.ModelAdmin):
     list_display = ('topic', 'message', 'creator', 'category')
     list_filter = ('topic',)
+    ordering = ('id',)
 
 
 @admin.register(Mailing)
 class MailingSettingsAdmin(admin.ModelAdmin):
     list_display = ('create_date', 'sending_time', 'frequency', 'status',
-                    'message', 'finish_date', 'finish_time',)
+                    'message', 'finish_date', 'finish_time')
 
 
 @admin.register(MailingLogs)

@@ -15,7 +15,7 @@ from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, DetailView, ListView, UpdateView, DeleteView
 from mailing.forms import MailingCreateForm, MessageForm, VersionForm, ClientForm, ManagerMailingForm
-from mailing.services import get_categories_cache, send_mails
+from mailing.services import get_categories_cache
 
 
 class ClientListView(ListView):

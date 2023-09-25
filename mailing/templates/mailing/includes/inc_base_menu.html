@@ -9,7 +9,8 @@
             <div class="col-sm-4 offset-md-1 py-4">
                 <h4 class="text-white">Site navigation</h4>
                 <ul class="list-unstyled">
-                    {% if user.is_authenticated and user.is_staff %}
+                    <li><a href="{% url 'mailing:home_page' %}" class="text-white">Home</a></li>
+                    {% if user.is_authenticated or user.is_staff %}
                         <li><a href="{% url 'users:manager_user_list' %}" class="text-white">Users</a></li>
                         <li><a href="{% url 'mailing:manager_mail_list' %}" class="text-white">Mailings</a></li>
                         <li><a href="{% url 'blog:manager_blog_list' %}" class="text-white">Blog</a></li>
