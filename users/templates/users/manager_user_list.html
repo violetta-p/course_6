@@ -23,8 +23,19 @@
         <td>{{ object.country }}</td>
         <td>{{ object.avatar }}</td>
         <td>{{ object.is_active }}</td>
-        <td><div class="btn">
-            </div></td>
+        <td><div class="btn-group">
+            {% if not object.is_superuser and not object.is_staff %}
+            <a href="{% url 'users:user_activation' object.pk %}"
+               class="btn btn-sm btn-primary">
+                {% if object.is_active %}
+                    Disable
+                {% else %}
+                    Activate
+                </a>
+            {% endif %}
+            {% endif %}
+        </div></td>
+
     </tr>
     {% endfor %}
   </tbody>

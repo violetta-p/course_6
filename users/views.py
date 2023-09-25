@@ -6,6 +6,7 @@ from django.contrib.auth.views import LogoutView as BaseLogoutView
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
+from django.http import Http404
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy, reverse
@@ -15,7 +16,7 @@ from django.views import View
 from django.views.generic import CreateView, UpdateView, TemplateView
 
 from config import settings
-from users.forms import UserForm, UserProfileForm
+from users.forms import UserForm, UserProfileForm, ManagerUserUpdateForm
 from users.models import User
 
 import secrets
@@ -127,3 +128,21 @@ def manager_user_list(request):
         'user_list': User.objects.all(),
     }
     return render(request, 'users/manager_user_list.html', content)
+
+
+class ManagerUserUpdateView(UpdateView):
+
+    model = User
+    form_class = ManagerUserUpdateForm
+    success_url = reverse_lazy('users:manager_user_list')
+
+    def get_object(self, queryset=None):
+        self.object = super().get_object(queryset)
+        if self.request.user.is_staff:
+            return self.object
+        else:
+            raise Http404
+
+    def form_valid(self, form):
+        self.object.object = form.save()
+        return super().form_valid(form)

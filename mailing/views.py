@@ -14,21 +14,9 @@ from django.http import Http404
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, DetailView, ListView, UpdateView, DeleteView
-from mailing.forms import MailingCreateForm, MessageForm, VersionForm, ClientForm
-from mailing.services import get_categories_cache
+from mailing.forms import MailingCreateForm, MessageForm, VersionForm, ClientForm, ManagerMailingForm
+from mailing.services import get_categories_cache, send_mails
 
-
-# from mailing.services import toggle_status
-
-
-# class ClientListView(ListView):
-#     """Просмотр клиентов"""
-#     model = Client
-#     extra_context = {'title': 'Клиенты'}
-#
-#     def get_queryset(self, *args, **kwargs):
-#         queryset = super().get_queryset(*args, **kwargs)
-#         return queryset
 
 class ClientListView(ListView):
     """Просмотр клиентов"""
@@ -118,13 +106,9 @@ class MailingCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         self.object = form.save()
+        self.object.creator = self.request.user
         self.object.status = 'CREATE'
         self.object.save()
-
-        # 
-        # message_service.create_task()
-        # mailing.status = 'START'
-        # mailing.save()
 
         return super().form_valid(form)
 
@@ -153,7 +137,9 @@ class MailingDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_object(self, queryset=None):
         self.object = super().get_object(queryset)
-        if self.request.user.is_superuser:
+        if self.object.creator == self.request.user:
+            return self.object
+        elif self.request.user.is_superuser:
             return self.object
         else:
             raise Http404
@@ -195,7 +181,9 @@ class MessageUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_object(self, queryset=None):
         self.object = super().get_object(queryset)
-        if self.object.creator == self.request.user or self.request.user.is_superuser:
+        if self.object.creator == self.request.user:
+            return self.object
+        elif self.request.user.is_superuser:
             return self.object
         else:
             raise Http404
@@ -233,7 +221,9 @@ class MessageDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_object(self, queryset=None):
         self.object = super().get_object(queryset)
-        if self.object.creator == self.request.user or self.request.user.is_superuser:
+        if self.object.creator == self.request.user:
+            return self.object
+        elif self.request.user.is_staff:
             return self.object
         else:
             raise Http404
@@ -264,7 +254,6 @@ class MessageDetailView(DetailView):
     model = Message
 
 
-
 def home_page(request):
 
     blog_count = int(Blog.objects.count())
@@ -283,8 +272,27 @@ def home_page(request):
     }
     return render(request, 'mailing/home_page.html', content)
 
+
 def manager_mail_list(request):
     content = {
         'mail_list': Mailing.objects.all(),
     }
     return render(request, 'mailing/manager_mail_list.html', content)
+
+
+class ManagerMailingUpdateView(UpdateView):
+
+    model = Mailing
+    form_class = ManagerMailingForm
+    success_url = reverse_lazy('mailing:manager_mail_list')
+
+    def get_object(self, queryset=None):
+        self.object = super().get_object(queryset)
+        if self.request.user.is_staff:
+            return self.object
+        else:
+            raise Http404
+
+    def form_valid(self, form):
+        self.object.object = form.save()
+        return super().form_valid(form)

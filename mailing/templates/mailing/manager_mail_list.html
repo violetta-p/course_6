@@ -29,8 +29,15 @@
         <td>{{ object.finish_date }}</td>
         <td>{{ object.finish_time }}</td>
         <td>{{ object.is_active }}</td>
-        <td><div class="btn">
-
+        <td><div class="btn-group">
+            <a href="{% url 'mailing:make_active' object.pk %}"
+               class="btn btn-sm btn-primary">
+                {% if object.is_active %}
+                    Disable
+                {% else %}
+                    Activate
+                </a>
+            {% endif %}
         </div></td>
     </tr>
     {% endfor %}
