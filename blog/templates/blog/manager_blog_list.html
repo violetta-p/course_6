@@ -29,9 +29,9 @@
         <td>{{ object.views_count }}</td>
         <td>{{ object.creator }}</td>
         <td><div class="btn-group">
-            <a href="{% url 'blog:edit' object.pk %}"
+            <a href="{% url 'blog:manager_blog_edit' object.pk %}"
                class="btn btn-sm btn-outline-secondary">Edit</a>
-            <a href="{% url 'blog:delete' object.pk %}"
+            <a href="{% url 'blog:manager_blog_delete' object.pk %}"
                class="btn btn-sm btn-outline-secondary">Delete</a>
         </div></td>
     </tr>

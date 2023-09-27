@@ -21,8 +21,13 @@
                 </div>
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="btn-group">
+                        {% if user.is_staff %}
+                        <a href="{% url 'blog:manager_blog_list'%}"
+                           class="btn btn-sm btn-primary">Back</a>
+                        {% else %}
                         <a href="{% url 'blog:list'%}"
                            class="btn btn-sm btn-primary">Back</a>
+                        {% endif %}
 
                         <a href="{% url 'blog:edit' object.pk %}"
                            class="btn btn-sm btn-primary">Edit</a>
